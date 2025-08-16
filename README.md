@@ -1,6 +1,7 @@
 # Pomodoro App
 
 Temporizador estilo Pomodoro hecho en HTML, CSS y JS puro.
+¡A currar!
 
 ## Funcionalidades
 - Temporizador de trabajo (25 min) y descanso (5 min).
