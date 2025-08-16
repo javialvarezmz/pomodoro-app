@@ -11,8 +11,22 @@
   const workInput = document.getElementById("work-duration");
   const breakInput = document.getElementById("break-duration");
 
-  // Sonido al acabar fase
-  const beep = new Audio("assets/sound-end.mp3");
+  // Sonido al acabar fase (elige formato soportado)
+  const beep = new Audio();
+  beep.src = beep.canPlayType("audio/ogg") ? "assets/tibel.ogg" : "assets/tibel.mp3";
+  function fallbackBeep() {
+    try {
+      const ctx = new (window.AudioContext || window.webkitAudioContext)();
+      const o = ctx.createOscillator();
+      const g = ctx.createGain();
+      o.type = 'sine'; o.frequency.value = 880;
+      o.connect(g); g.connect(ctx.destination);
+      g.gain.setValueAtTime(0.0001, ctx.currentTime);
+      g.gain.exponentialRampToValueAtTime(0.3, ctx.currentTime + 0.01);
+      o.start();
+      setTimeout(() => { g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.01); o.stop(); ctx.close(); }, 300);
+    } catch {}
+  }
 
   // Estado global
   let phase = "work"; // "work" | "break"
@@ -20,6 +34,11 @@
   let targetTime = null;
   let timerInterval = null;
   let remainingMs = null;
+
+  // Wake Lock para evitar que la pantalla se duerma en móvil
+  let wakeLock;
+  async function requestWakeLock() { try { wakeLock = await navigator.wakeLock?.request('screen'); } catch {} }
+  function releaseWakeLock() { try { wakeLock?.release(); wakeLock = null; } catch {} }
 
   // Duraciones (ms)
   function getDurations() {
@@ -53,13 +72,20 @@
     timeDisplay.textContent = `${String(min).padStart(2, "0")}:${String(sec).padStart(2, "0")}`;
     phaseDisplay.textContent = phase === "work" ? "Trabajo" : "Descanso";
     document.body.setAttribute("data-phase", phase);
+    // título dinámico en la pestaña
+    document.title = `${String(min).padStart(2, "0")}:${String(sec).padStart(2, "0")} · Pomodoro`;
   }
 
   // Cambiar de fase
   function switchPhase() {
     phase = phase === "work" ? "break" : "work";
     msgBox.textContent = phase === "work" ? "¡Hora de concentrarse!" : "¡Toca descansar!";
-    beep.play().catch(() => {}); // evitar error si bloqueado por navegador
+    beep.play().catch(() => fallbackBeep()); // fallback si el navegador bloquea el autoplay
+    // Notificación al terminar la fase
+    if ('Notification' in window && Notification.permission === 'granted') {
+      const body = phase === 'work' ? '¡Hora de concentrarse!' : '¡Toca descansar!';
+      new Notification('Fin de fase', { body, silent: true });
+    }
     startTimer();
   }
 
@@ -75,6 +101,8 @@
     clearInterval(timerInterval);
     timerInterval = setInterval(tick, 500);
     tick();
+    requestWakeLock();
+    setButtons();
   }
 
   // Pausar
@@ -84,6 +112,8 @@
     remainingMs = targetTime - Date.now();
     startPauseBtn.textContent = "▶️ Reanudar";
     msgBox.textContent = "Temporizador en pausa";
+    releaseWakeLock();
+    setButtons();
   }
 
   // Reanudar
@@ -94,6 +124,8 @@
     clearInterval(timerInterval);
     timerInterval = setInterval(tick, 500);
     tick();
+    requestWakeLock();
+    setButtons();
   }
 
   // Resetear
@@ -105,6 +137,14 @@
     render(duration);
     startPauseBtn.textContent = "▶️ Iniciar";
     msgBox.textContent = "Temporizador reiniciado";
+    releaseWakeLock();
+    setButtons();
+  }
+
+  function setButtons() {
+    const active = running || !!remainingMs;
+    resetBtn.disabled = !active;
+    nextBtn.disabled  = !active;
   }
 
   // Tick
@@ -156,6 +196,13 @@
   });
 
   // Inicialización
+  // Pedir permiso de notificaciones (si aplica)
+  document.addEventListener('DOMContentLoaded', () => {
+    if ('Notification' in window && Notification.permission === 'default') {
+      Notification.requestPermission().catch(() => {});
+    }
+  });
   loadDurations();
   resetTimer();
+  setButtons();
 })();
