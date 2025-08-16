@@ -1,0 +1,143 @@
+/* ---------- RESET ---------- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  height: 100%;
+  font-family: system-ui, sans-serif;
+  background: #f5f5f5;
+  color: #222;
+  line-height: 1.5;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem;
+}
+
+/* ---------- HEADER / FOOTER ---------- */
+header, footer {
+  text-align: center;
+  margin: 1rem 0;
+}
+
+header h1 {
+  font-size: 1.8rem;
+}
+
+footer p {
+  font-size: 0.9rem;
+  color: #555;
+}
+
+/* ---------- TIMER ---------- */
+#timer {
+  text-align: center;
+  margin: 2rem 0;
+}
+
+#time-display {
+  font-size: clamp(3rem, 10vw, 6rem);
+  font-weight: bold;
+}
+
+#phase-display {
+  font-size: 1.2rem;
+  margin-top: 0.5rem;
+  color: #666;
+}
+
+/* ---------- CONTROLS ---------- */
+#controls {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin: 1rem 0;
+}
+
+button {
+  font-size: 1rem;
+  padding: 0.6rem 1.2rem;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.1s ease;
+}
+
+button:focus {
+  outline: 3px solid #0078d4;
+  outline-offset: 2px;
+}
+
+button:active {
+  transform: scale(0.95);
+}
+
+.button {
+  background: #0078d4;
+  color: #fff;
+}
+
+.button:hover {
+  background: #005fa3;
+}
+
+.button-ghost {
+  background: #e0e0e0;
+  color: #222;
+}
+
+.button-ghost:hover {
+  background: #cacaca;
+}
+
+/* ---------- SETTINGS ---------- */
+#settings {
+  margin: 2rem 0;
+  text-align: center;
+}
+
+#settings h2 {
+  font-size: 1.2rem;
+  margin-bottom: 1rem;
+}
+
+#settings label {
+  display: block;
+  margin-bottom: 0.8rem;
+  font-size: 0.95rem;
+}
+
+#settings input {
+  width: 5rem;
+  padding: 0.3rem;
+  margin-left: 0.5rem;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+/* ---------- MESSAGES ---------- */
+#messages {
+  text-align: center;
+  margin-top: 1rem;
+  min-height: 1.5rem;
+  font-weight: bold;
+}
+
+/* Estado trabajo / descanso (se aplicará con JS) */
+body[data-phase="work"] #phase-display {
+  color: #d62828;
+}
+
+body[data-phase="break"] #phase-display {
+  color: #2a9d8f;
+}

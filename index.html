@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pomodoro App</title>
+
+  <!-- Favicon simple (lo cambiaremos en PWA) -->
+  <link rel="icon" href="data:," />
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header>
+    <h1>⏱️ Pomodoro App</h1>
+  </header>
+
+  <main>
+    <!-- Pantalla del temporizador -->
+    <section id="timer" aria-live="polite">
+      <div id="time-display">25:00</div>
+      <div id="phase-display">Trabajo</div>
+    </section>
+
+    <!-- Controles -->
+    <section id="controls">
+      <button id="start-pause-btn" class="button">▶️ Iniciar</button>
+      <button id="reset-btn" class="button-ghost">🔄 Reset</button>
+      <button id="next-btn" class="button-ghost">⏭️ Siguiente</button>
+    </section>
+
+    <!-- Ajustes rápidos -->
+    <section id="settings">
+      <h2>Ajustes rápidos</h2>
+      <label>
+        Duración Pomodoro (min):
+        <input type="number" id="work-duration" min="1" max="120" value="25" />
+      </label>
+      <label>
+        Duración Descanso (min):
+        <input type="number" id="break-duration" min="1" max="60" value="5" />
+      </label>
+    </section>
+
+    <!-- Feedback accesible -->
+    <section id="messages" role="status" aria-live="polite"></section>
+  </main>
+
+  <footer>
+    <p>Hecho con ❤️ para practicar JS y productividad</p>
+  </footer>
+
+  <!-- Script -->
+  <script src="main.js" defer></script>
+</body>
+</html>
